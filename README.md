@@ -34,3 +34,8 @@ Comment récupérer le projet
   ...
 ```
     
+## Règles
+
+- Pas de push dans main
+- Pas de push dans develop
+- Nommage (feat: / fix: / test:)

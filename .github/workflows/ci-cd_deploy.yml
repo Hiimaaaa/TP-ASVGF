@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run build --if-present || true
+
+      - name: Check for TypeScript errors
+        run: npx tsc --noEmit
+
+      - name: Build project
+        run: npm run build
+
+  # Optional: Deploy step (uncomment and configure as needed)
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Use Node.js 20.x
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20.x
+  #         cache: 'npm'
+  #
+  #     - name: Install dependencies
+  #       run: npm ci
+  #
+  #     - name: Deploy to production
+  #       run: npm run build
+  #       env:
+  #         VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+  #         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+

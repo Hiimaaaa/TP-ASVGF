@@ -1,0 +1,56 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Avatar SVG Factory" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+		<title>{title}</title>
+    <style>
+      body { font-family: 'Outfit', sans-serif; }
+    </style>
+	</head>
+	<body class="bg-[#0B0F19] text-slate-100 antialiased overflow-x-hidden selection:bg-indigo-500/30 selection:text-white">
+    
+
+    <div class="fixed inset-0 -z-10">
+       <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+       <div class="absolute inset-0 bg-radial-gradient(circle at center, transparent 0%, #0B0F19 100%)"></div>
+    </div>
+
+
+    <header class="w-full py-4 px-6 border-b border-white/5 bg-[#0B0F19]/80 backdrop-blur-md sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <a href="/" class="flex items-center gap-3 group cursor-pointer no-underline">
+           <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+             C
+           </div>
+           <h1 class="text-lg font-bold tracking-wide text-white group-hover:text-indigo-400 transition-colors">
+             CASTEL<span class="text-indigo-500">API</span>
+           </h1>
+        </a>
+        <nav class="hidden md:flex items-center gap-2">
+          <a href="/" class="px-5 py-2 rounded-full text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">Générateur</a>
+          <a href="/gallery" class="px-5 py-2 rounded-full text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">Galerie</a>
+        </nav>
+      </div>
+    </header>
+
+		<slot />
+
+
+
+	</body>
+</html>

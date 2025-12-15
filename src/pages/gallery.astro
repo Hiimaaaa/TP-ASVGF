@@ -1,0 +1,87 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
+
+export const prerender = false;
+
+let avatars: any[] = [];
+let errorMsg = null;
+
+try {
+  const { data, error } = await supabase
+    .from('avatars')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(100);
+  
+  if (error) {
+    console.error("Supabase Error:", error);
+    errorMsg = error.message;
+  } else {
+    avatars = data || [];
+  }
+} catch (e: any) {
+  console.error("Fetch Error:", e);
+  errorMsg = e.message;
+}
+---
+
+<Layout title="Galerie - CastelAPI">
+  <main class="max-w-7xl mx-auto px-6 pt-12 min-h-screen">
+    <div class="flex justify-between items-end mb-10 pt-10">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white">Galerie Communautaire</h2>
+        <p class="text-slate-400 mt-2">Explorez les personnages créés par la communauté.</p>
+      </div>
+      <a href="/" class="hidden md:inline-flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
+        <span>+ Créer un Nouveau</span>
+      </a>
+    </div>
+
+    {errorMsg && (
+       <div class="p-4 bg-red-50 text-red-700 rounded-xl mb-8 border border-red-100 flex items-center gap-3">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+         <div>
+           <strong>Erreur de Connexion:</strong> <span class="opacity-90">{errorMsg}</span>
+           <p class="text-sm mt-1">Vérifiez que la table existe et que RLS autorise la lecture.</p>
+         </div>
+       </div>
+    )}
+
+    {avatars.length === 0 && !errorMsg ? (
+       <div class="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-200">
+         <div class="text-6xl mb-4">🖼️</div>
+         <h3 class="text-xl font-semibold text-slate-800">La galerie est vide</h3>
+         <p class="text-slate-500 mt-2 mb-6">Soyez le premier à créer un chef-d'œuvre.</p>
+         <a href="/" class="inline-flex px-6 py-3 bg-indigo-600 text-white rounded-xl font-medium shadow-md hover:bg-indigo-700 transition-all">
+           Aller au Générateur
+         </a>
+       </div>
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {avatars.map((av) => (
+          <div class="group bg-[#131825] rounded-2xl p-4 border border-white/5 hover:border-indigo-500/30 hover:bg-[#1A1F2E] transition-all duration-300 hover:-translate-y-1 shadow-2xl shadow-black/20">
+            <div class="aspect-square w-full overflow-hidden rounded-xl bg-[#0B0F19] relative items-center justify-center flex p-4 border border-white/5">
+               <div set:html={av.svg_content} class="w-full h-full drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-500" />
+            </div>
+            <div class="mt-4 px-1">
+              <div class="flex justify-between items-start mb-2 h-10">
+                 <p class="text-sm font-semibold text-slate-200 line-clamp-2 leading-snug" title={av.prompt}>
+                   {av.style_tags?.features || 'Avatar'}
+                 </p>
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t border-white/5">
+                <span class="inline-flex items-center px-2 py-1 rounded-md bg-white/5 text-indigo-300 text-[10px] font-bold uppercase tracking-wider border border-white/5">
+                  {av.color_palette || 'SVG'}
+                </span>
+                <span class="text-xs text-slate-500 font-medium">
+                  {new Date(av.created_at).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </main>
+</Layout>

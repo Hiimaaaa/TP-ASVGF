@@ -58,7 +58,7 @@ Open [http://localhost:4321](http://localhost:4321).
 
 - **Frontend**: Astro (Pages) + React (Interactive Components).
 - **Styling**: Tailwind CSS (Premium Glassmorphism).
-- **Backend**: Astro API Routes (`src/pages/api/generate.ts`) acting as a proxy.
+- **SSG**: Edge functions for API calls 
 - **AI**: Gemini 1.5 Flash via `@google/generative-ai`.
 - **Database**: Supabase (PostgreSQL).
 

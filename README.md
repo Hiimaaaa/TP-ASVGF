@@ -67,11 +67,10 @@ Ce projet repose sur une architecture **serverless + statique**, sans backend.
 - **Tailwind CSS**
   - Styling et design system (glassmorphism)
 
-### Serverless (Backend léger)
-- **Astro API Routes / Supabase Edge Functions**
+### Serverless
+- **Supabase Edge Functions**
   - Appels sécurisés à l’API Gemini
   - Validation des données
-  - Communication avec la base de données
 
 ### Intelligence Artificielle
 - **Gemini 1.5 Flash**
@@ -81,6 +80,7 @@ Ce projet repose sur une architecture **serverless + statique**, sans backend.
 ### Base de données
 - **Supabase (PostgreSQL)**
   - Stockage des avatars générés
+  - Accès direct depuis le frontend via Supabase Client
   - Sécurité via Row Level Security (RLS)
 
 ### Déploiement
@@ -89,6 +89,13 @@ Ce projet repose sur une architecture **serverless + statique**, sans backend.
 - **Supabase**
   - Hébergement des Edge Functions
   - Base de données
+
+
+## 🔁 Flux de données
+
+- Le frontend communique directement avec Supabase pour les opérations autorisées (lecture / écriture des avatars)
+- Les opérations sensibles (génération via Gemini) passent par des Edge Functions
+- Les règles RLS garantissent que le client n’accède qu’aux données autorisées
 
 
 ## 🔒 Securité

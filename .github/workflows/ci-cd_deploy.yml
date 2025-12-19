@@ -2,12 +2,14 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, feature/workflow-fixed ]
+    branches: [ main, develop, feature/* ]
   pull_request:
     branches: [ main, develop ]
 
 jobs:
-  build:
+  # --- JOB 1 : INTEGRATION (Tests & Build) ---
+  ci:
+    name: CI - Test & Build
     runs-on: ubuntu-latest
 
     steps:
@@ -23,30 +25,59 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Etape 1 : Qualité du code (Vérifie que le code est propre)
+      - name: Lint Code
+        run: npm run lint
+        # Si vous n'avez pas encore configuré ESLint, vous pouvez commenter cette ligne
+
+      # Etape 2 : Tests (Vérifie que le code fonctionne)
+      - name: Run Unit Tests
+        run: npm run test
+        # Si vous n'avez pas de tests, commentez cette ligne (mais c'est recommandé d'en avoir !)
+
+      # Etape 3 : Build (Compilation)
+      # IMPORTANT : Si vous utilisez Vite/React, les variables d'environnement
+      # doivent être présentes PENDANT le build.
       - name: Build project
         run: npm run build
+        env:
+          # On injecte les secrets ici pour qu'ils soient "cuits" dans le build
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-  # Optional: Deploy step (uncomment and configure as needed)
-  # deploy:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  #
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #
-  #     - name: Use Node.js 20.x
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20.x
-  #         cache: 'npm'
-  #
-  #     - name: Install dependencies
-  #       run: npm ci
-  #
-  #     - name: Deploy to production
-  #       run: npm run build
-  #       env:
-  #         VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-  #         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      # Etape 4 : Sauvegarde du dossier 'dist' (Artefact) pour le job suivant
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: dist # Assurez-vous que c'est bien 'dist' ou 'build' selon votre config
+          retention-days: 1
 
+  # --- JOB 2 : DEPLOYMENT (Mise en production) ---
+  deploy:
+    name: CD - Deploy to Production
+    needs: ci # Ce job attend que 'ci' soit fini et réussi
+    runs-on: ubuntu-latest
+
+    # On déploie seulement si c'est la branche 'main' et que c'est un 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build
+          path: dist # On récupère le dossier compilé au job précédent
+
+      # À partir d'ici, le dossier 'dist' est prêt à être envoyé.
+      # L'étape suivante dépend de votre hébergeur (Vercel, Netlify, FTP, S3, etc.)
+
+      # EXEMPLE : Si vous déployez sur un serveur via rsync/SSH ou une action spécifique
+      # Voici un exemple générique pour montrer que le dossier est là :
+      - name: Deploy to Hosting Provider
+        run: |
+          echo "Déploiement du dossier dist/ en cours..."
+          ls -la dist/
+          # Ajoutez ici la commande réelle de déploiement.
+          # Par exemple pour Firebase: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
+          # Ou pour Netlify, S3, etc.

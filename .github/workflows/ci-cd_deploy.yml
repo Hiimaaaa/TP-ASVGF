@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      
+
         # Si vous n'avez pas de tests, vous pouvez aussi supprimer ces 2 lignes
         # ou ajouter un script "test": "echo 'No tests'" dans package.json
 
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Se déclenche uniquement sur la branche main lors d'un push
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/feature/workflow-fixed' && github.event_name == 'push'
 
     steps:
       - name: Download Build Artifact

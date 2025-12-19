@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import AuthButton from '../components/feature/AuthButton';
 
 interface Props {
 	title: string;
@@ -41,9 +42,9 @@ const { title } = Astro.props;
              CASTEL<span class="text-indigo-500">API</span>
            </h1>
         </a>
-        <nav class="hidden md:flex items-center gap-2">
-          <a href="/" class="px-5 py-2 rounded-full text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">Générateur</a>
-          <a href="/gallery" class="px-5 py-2 rounded-full text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">Galerie</a>
+        <nav class="flex items-center gap-3">
+          <a href="/gallery" class="hidden md:block px-5 py-2 rounded-full text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">Galerie</a>
+          <AuthButton client:load />
         </nav>
       </div>
     </header>

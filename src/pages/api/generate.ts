@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ request }) => {
     features = cleanInput(features, "Standard");
     color = cleanInput(color, "Vibrant");
 
-    const basePrompt = "A flat vector art avatar of a MONKEY (Ape/Chimp). The monkey's face AND head must be fully visible and centered. NOT zoomed in. Leave space around the head. Simple geometric shapes. Cute and cool expression.";
+    const basePrompt = "Generate an original avatar in a minimalist vector style, framed from the bust to the shoulders: character seen from the front (male or female) with a round head, very simple eyes and mouth, stylized hair in a few shapes, body reduced to the shoulders and upper torso, flat colors with a maximum of 3-4 colors, sharp outlines, plain colored background, no text or logo.";
     
     const styleConfig = {
       features: features,

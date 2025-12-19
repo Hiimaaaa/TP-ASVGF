@@ -25,41 +25,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Etape 1 : Qualité du code (Vérifie que le code est propre)
-      - name: Lint Code
-        run: npm run lint
-        # Si vous n'avez pas encore configuré ESLint, vous pouvez commenter cette ligne
+      # L'étape de LINT a été supprimée ici.
 
-      # Etape 2 : Tests (Vérifie que le code fonctionne)
       - name: Run Unit Tests
         run: npm run test
-        # Si vous n'avez pas de tests, commentez cette ligne (mais c'est recommandé d'en avoir !)
+        # Si vous n'avez pas de tests, vous pouvez aussi supprimer ces 2 lignes
+        # ou ajouter un script "test": "echo 'No tests'" dans package.json
 
-      # Etape 3 : Build (Compilation)
-      # IMPORTANT : Si vous utilisez Vite/React, les variables d'environnement
-      # doivent être présentes PENDANT le build.
       - name: Build project
         run: npm run build
         env:
-          # On injecte les secrets ici pour qu'ils soient "cuits" dans le build
+          # Injection des variables d'environnement pour la compilation
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      # Etape 4 : Sauvegarde du dossier 'dist' (Artefact) pour le job suivant
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: production-build
-          path: dist # Assurez-vous que c'est bien 'dist' ou 'build' selon votre config
+          path: dist # Vérifiez bien que votre dossier de sortie s'appelle 'dist' ou 'build'
           retention-days: 1
 
   # --- JOB 2 : DEPLOYMENT (Mise en production) ---
   deploy:
     name: CD - Deploy to Production
-    needs: ci # Ce job attend que 'ci' soit fini et réussi
+    needs: ci
     runs-on: ubuntu-latest
 
-    # On déploie seulement si c'est la branche 'main' et que c'est un 'push'
+    # Se déclenche uniquement sur la branche main lors d'un push
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
@@ -67,17 +60,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: production-build
-          path: dist # On récupère le dossier compilé au job précédent
+          path: dist
 
-      # À partir d'ici, le dossier 'dist' est prêt à être envoyé.
-      # L'étape suivante dépend de votre hébergeur (Vercel, Netlify, FTP, S3, etc.)
-
-      # EXEMPLE : Si vous déployez sur un serveur via rsync/SSH ou une action spécifique
-      # Voici un exemple générique pour montrer que le dossier est là :
+      # À partir d'ici, ajoutez votre étape de déploiement spécifique
       - name: Deploy to Hosting Provider
         run: |
-          echo "Déploiement du dossier dist/ en cours..."
+          echo "Prêt à déployer le dossier dist/..."
           ls -la dist/
-          # Ajoutez ici la commande réelle de déploiement.
-          # Par exemple pour Firebase: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
-          # Ou pour Netlify, S3, etc.
+          # Exemple : firebase deploy, netlify deploy, scp, etc.

@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function AvatarGenerator() {
   const [loading, setLoading] = useState(false);
@@ -12,17 +18,13 @@ export default function AvatarGenerator() {
     setLoading(true);
     setSvg(null);
     try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config)
+      const { data, error } = await supabase.functions.invoke('generate-avatar', {
+        body: config
       });
-      
-      const data = await response.json();
-      
-      if (data.error) {
-        alert("Error: " + data.error);
-      } else if (data.avatar && data.avatar.svg) {
+
+      if (error) {
+        alert("Error: " + error.message);
+      } else if (data?.avatar?.svg) {
         setSvg(data.avatar.svg);
       }
     } catch (error) {

@@ -23,7 +23,7 @@ async function listModels() {
     // Better strategy: Try to generate content with 'gemini-1.5-flash' and print the FULL error body.
     // Sometimes 404 means the endpoint region is not supported or something else.
     
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const result = await model.generateContent("Hello");
     console.log("Success with gemini-1.5-flash!", result.response.text());
   } catch (error) {

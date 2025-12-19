@@ -14,7 +14,7 @@ export async function generateAvatarSvg(prompt: string, styleConfig: any) {
   }
 
 
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
   const systemInstruction = `
   You are an expert SVG artist specialized in creating geometric, flat-design avatars.

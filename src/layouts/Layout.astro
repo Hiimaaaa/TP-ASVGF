@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import AuthButton from '../components/feature/AuthButton';
+import ThemeToggle from '../components/ui/ThemeToggle';
 
 interface Props {
 	title: string;
@@ -19,39 +20,55 @@ const { title } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 		<title>{title}</title>
+    <script is:inline>
+      // Initialize theme to prevent FOUC
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
     <style>
       body { font-family: 'Outfit', sans-serif; }
     </style>
 	</head>
-	<body class="bg-[#0B0F19] text-slate-100 antialiased overflow-x-hidden selection:bg-indigo-500/30 selection:text-white">
+	<body class="bg-slate-50 text-slate-900 dark:bg-[#0B0F19] dark:text-slate-100 antialiased overflow-x-hidden selection:bg-indigo-500/30 selection:text-indigo-600 dark:selection:text-white transition-colors duration-300">
     
-
     <div class="fixed inset-0 -z-10">
        <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-       <div class="absolute inset-0 bg-radial-gradient(circle at center, transparent 0%, #0B0F19 100%)"></div>
+       <div class="absolute inset-0 bg-white/50 dark:bg-[#0B0F19] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black_70%)]"></div>
     </div>
 
 
-    <header class="w-full py-4 px-6 border-b border-white/5 bg-[#0B0F19]/80 backdrop-blur-md sticky top-0 z-50">
+    <header class="w-full py-4 px-6 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-[#0B0F19]/80 backdrop-blur-md sticky top-0 z-50 transition-colors duration-300">
       <div class="max-w-7xl mx-auto flex justify-between items-center">
         <a href="https://hiimaaaa.github.io/TP-ASVGF/" class="flex items-center gap-3 group cursor-pointer no-underline">
            <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
              C
            </div>
-           <h1 class="text-lg font-bold tracking-wide text-white group-hover:text-indigo-400 transition-colors">
+           <h1 class="text-lg font-bold tracking-wide text-slate-800 dark:text-white group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
              CASTEL<span class="text-indigo-500">API</span>
            </h1>
         </a>
         <nav class="flex items-center gap-3">
-          <a href="/gallery" class="hidden md:block px-5 py-2 rounded-full text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">Galerie</a>
+          <a href="/gallery" class="hidden md:block px-5 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5 transition-all">Galerie</a>
+          <ThemeToggle client:load />
           <AuthButton client:load />
         </nav>
       </div>
     </header>
 
 		<slot />
-
-
 
 	</body>
 </html>

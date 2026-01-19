@@ -9,21 +9,21 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     const body = await request.json();
-    let { features, color } = body; 
+    let { gender, colors } = body; 
 
-    const cleanInput = (str: any, fallback: string) => {
-      if (typeof str !== 'string') return fallback;
-      return str.substring(0, 100).replace(/[<>{}]/g, '').trim() || fallback;
-    };
+    const genderText = gender === 'female' ? 'female' : 'male';
+    const colorsText = Array.isArray(colors) && colors.length > 0 
+      ? `using specifically this color palette: ${colors.join(', ')}` 
+      : "using a vibrant and harmonious color palette";
 
-    features = cleanInput(features, "Standard");
-    color = cleanInput(color, "Vibrant");
-
-    const basePrompt = "Generate an original avatar in a minimalist vector style, framed from the bust to the shoulders: character seen from the front (male or female) with a round head, very simple eyes and mouth, stylized hair in a few shapes, body reduced to the shoulders and upper torso, flat colors with a maximum of 3-4 colors, sharp outlines, plain colored background, no text or logo.";
+    const basePrompt = `Generate a minimalist vector avatar of a ${genderText} character 
+    from the front. Style: round head, very simple eyes and mouth, stylized hair. 
+    Frame: from bust to shoulders. Colors: ${colorsText}. Background: solid color. 
+    Style: Sharp outlines, flat design, maximum 4 colors.`;
     
     const styleConfig = {
-      features: features,
-      colorTheme: color,
+      gender: genderText,
+      requestedColors: colors,
       style: "Flat Vector Art"
     };
 
@@ -44,7 +44,7 @@ export const POST: APIRoute = async ({ request }) => {
             svg_content: svgContent,
             prompt: basePrompt,
             style_tags: styleConfig,
-            color_palette: color
+            color_palette: colors?.join(', ') || 'Vibrant'
           }
         ])
         .select()

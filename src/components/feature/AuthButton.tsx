@@ -61,7 +61,7 @@ export default function AuthButton() {
       <div className="relative">
         <button
           onClick={() => setShowMenu(!showMenu)}
-          className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/5 transition-all"
+          className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
         >
           {user.user_metadata?.avatar_url ? (
             <img 
@@ -74,10 +74,10 @@ export default function AuthButton() {
               {user.email?.[0]?.toUpperCase() || 'U'}
             </div>
           )}
-          <span className="hidden md:block text-sm font-medium text-white">
+          <span className="hidden md:block text-sm font-medium text-slate-900 dark:text-white">
             {user.user_metadata?.name || user.email?.split('@')[0]}
           </span>
-          <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
@@ -88,21 +88,21 @@ export default function AuthButton() {
               className="fixed inset-0 z-10" 
               onClick={() => setShowMenu(false)}
             ></div>
-            <div className="absolute right-0 mt-2 w-56 bg-[#0D1117] border border-white/10 rounded-xl shadow-2xl z-20 overflow-hidden">
-              <div className="p-4 border-b border-white/10">
-                <p className="text-sm font-semibold text-white">{user.user_metadata?.name || 'Utilisateur'}</p>
-                <p className="text-xs text-slate-400 truncate">{user.email}</p>
+            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#0D1117] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-20 overflow-hidden">
+              <div className="p-4 border-b border-slate-200 dark:border-white/10">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">{user.user_metadata?.name || 'Utilisateur'}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
               </div>
               <div className="p-2">
                 <a 
                   href="/gallery" 
-                  className="block px-4 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg transition-all"
+                  className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-all"
                 >
                   Mes avatars
                 </a>
                 <button
                   onClick={handleSignOut}
-                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                  className="w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
                 >
                   Déconnexion
                 </button>
@@ -119,16 +119,11 @@ export default function AuthButton() {
       <div className="flex items-center gap-3">
         <button 
           onClick={() => openAuthModal('login')}
-          className="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all border border-white/10"
+          className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all border border-slate-200 dark:border-white/10"
         >
           Connexion
         </button>
-        <button 
-          onClick={() => openAuthModal('signup')}
-          className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all shadow-lg shadow-purple-900/20"
-        >
-          Inscription
-        </button>
+
       </div>
 
       <AuthModal 

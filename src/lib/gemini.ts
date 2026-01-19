@@ -25,7 +25,7 @@ export async function generateAvatarSvg(prompt: string, styleConfig: any) {
   3. MANDATORY: The root <svg> tag MUST have 'viewBox="0 0 512 512"' and 'preserveAspectRatio="xMidYMid meet"'.
   4. IMPORTANT: Draw the subject fully visible within the center. Leave a 10% margin on all sides. DO NOT CROP THE HEAD.
   5. The style should be: Flat Vector Art, Minimalist, Geometric shapes.
-  6. Use harmonious colors based on the requested theme.
+  6. COLOR COMPLIANCE: If specific HEX colors are requested in the prompt, you MUST use ONLY those colors plus black and white.
   7. DO NOT use <script> tags or onclick events.
   `;
 

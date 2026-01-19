@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
+import VoteButton from '../components/feature/LikeButton';
 
 export const prerender = false;
 
@@ -72,8 +73,9 @@ try {
               </div>
               <div class="flex justify-between items-center pt-2 border-t border-white/5">
                 <span class="inline-flex items-center px-2 py-1 rounded-md bg-white/5 text-indigo-300 text-[10px] font-bold uppercase tracking-wider border border-white/5">
-                  {av.color_palette || 'SVG'}
+                  {(av.color_palette?.split(',')[0] || 'SVG').trim()}
                 </span>
+                <VoteButton client:load avatarId={av.id} initialScore={av.score || 0} />
                 <span class="text-xs text-slate-500 font-medium">
                   {new Date(av.created_at).toLocaleDateString()}
                 </span>

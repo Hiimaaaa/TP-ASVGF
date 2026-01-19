@@ -1,17 +1,14 @@
-name: CI/CD Pipeline
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main, develop, feature/* ]
-  pull_request:
-    branches: [ main, develop ]
+    branches: [ main ] # Déclenche le workflow sur la branche main
+  workflow_dispatch: # Permet de lancer le workflow manuellement
 
 jobs:
-  # --- JOB 1 : INTEGRATION (Tests & Build) ---
-  ci:
-    name: CI - Test & Build
+  build:
+    name: Build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,43 +22,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-
-        # Si vous n'avez pas de tests, vous pouvez aussi supprimer ces 2 lignes
-        # ou ajouter un script "test": "echo 'No tests'" dans package.json
-
       - name: Build project
         run: npm run build
         env:
-          # Injection des variables d'environnement pour la compilation
+          # Les secrets ne sont pas nécessaires pour un build statique
+          # mais on les garde au cas où vous en auriez besoin pour autre chose
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: production-build
-          path: dist # Vérifiez bien que votre dossier de sortie s'appelle 'dist' ou 'build'
-          retention-days: 1
+          path: ./dist
 
-  # --- JOB 2 : DEPLOYMENT (Mise en production) ---
   deploy:
-    name: CD - Deploy to Production
-    needs: ci
+    name: Deploy
+    needs: build
     runs-on: ubuntu-latest
-
-    # Se déclenche uniquement sur la branche main lors d'un push
-    if: github.ref == 'refs/heads/feature/workflow-fixed' && github.event_name == 'push'
-
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: production-build
-          path: dist
-
-      # À partir d'ici, ajoutez votre étape de déploiement spécifique
-      - name: Deploy to Hosting Provider
-        run: |
-          echo "Prêt à déployer le dossier dist/..."
-          ls -la dist/
-          # Exemple : firebase deploy, netlify deploy, scp, etc.
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

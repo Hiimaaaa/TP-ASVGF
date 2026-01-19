@@ -5,8 +5,14 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'static',
+  output: 'static', 
+
   site: 'https://hiimaaaa.github.io',
-  base: '/TP-ASVGF',
-  integrations: [react(), tailwind()],
+  base: '/TP-ASVGF',      
+
+  integrations: [react()],
+
+  vite: {
+    plugins: [tailwindcss()]
+  }
 });

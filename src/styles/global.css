@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @keyframes gradient {
   0%, 100% {
@@ -39,8 +40,16 @@ html {
   width: 10px;
 }
 
+:root {
+  --scrollbar-track: #f8fafc;
+}
+
+.dark {
+  --scrollbar-track: #0B0F19;
+}
+
 ::-webkit-scrollbar-track {
-  background: #0B0F19;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {

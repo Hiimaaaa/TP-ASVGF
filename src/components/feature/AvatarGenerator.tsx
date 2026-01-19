@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 export default function AvatarGenerator() {
   const [loading, setLoading] = useState(false);
   const [svg, setSvg] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [config, setConfig] = useState({
     gender: 'male',
     selectedColors: [] as string[]
   });
 
-  // Petites barres de couleurs (rods)
+  
   const colorOptions = [
     { id: 1, name: 'Purple', color: '#A78BFA' },
     { id: 2, name: 'Pink', color: '#F472B6' },
@@ -23,6 +24,7 @@ export default function AvatarGenerator() {
   const generateAvatar = async () => {
     setLoading(true);
     setSvg(null);
+    setError(null);
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -36,13 +38,14 @@ export default function AvatarGenerator() {
       const data = await response.json();
       
       if (data.error) {
-        alert("Error: " + data.error);
+        setError(data.error);
+        console.error("Gemini Error:", data.error);
       } else if (data.avatar && data.avatar.svg) {
         setSvg(data.avatar.svg);
       }
-    } catch (error) {
-      console.error("Failed to generate:", error);
-      alert("Something went wrong. Check console.");
+    } catch (err: any) {
+      console.error("Failed to generate:", err);
+      setError(err.message || "Une erreur est survenue lors de la génération.");
     } finally {
       setLoading(false);
     }
@@ -78,17 +81,17 @@ export default function AvatarGenerator() {
     <div className="w-full max-w-[1400px] mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* LEFT SIDE - Configuration */}
+       
         <div className="space-y-6">
           
-          {/* Configuration Section */}
+        
           <div className="bg-[#0D1117]/80 backdrop-blur-sm border border-white/5 rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
               <h3 className="text-lg font-semibold text-white">Configuration</h3>
             </div>
             
-            {/* Gender Selection */}
+            
             <div className="grid grid-cols-2 gap-4 mb-6">
               <button
                 onClick={() => setConfig({...config, gender: 'male'})}
@@ -128,14 +131,14 @@ export default function AvatarGenerator() {
             </div>
           </div>
 
-          {/* Color Selection - Petits Rods */}
+        
           <div className="bg-[#0D1117]/80 backdrop-blur-sm border border-white/5 rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-1 h-6 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full"></div>
               <h3 className="text-lg font-semibold text-white">Couleurs</h3>
             </div>
             
-            {/* Petites barres de couleurs */}
+          
             <div className="grid grid-cols-4 gap-3">
               {colorOptions.map((colorOption) => (
                 <button
@@ -161,7 +164,7 @@ export default function AvatarGenerator() {
               ))}
             </div>
 
-            {/* Selected Colors Display */}
+           
             {config.selectedColors.length > 0 && (
               <div className="mt-4 pt-4 border-t border-white/10">
                 <p className="text-xs text-slate-400 mb-2">Couleurs sélectionnées ({config.selectedColors.length})</p>
@@ -178,7 +181,25 @@ export default function AvatarGenerator() {
             )}
           </div>
 
-          {/* Generate Button */}
+        
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="flex-1">
+                <p className="font-semibold text-sm">Génération échouée</p>
+                <p className="text-xs opacity-80">{error}</p>
+              </div>
+              <button onClick={() => setError(null)} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+         
           <button 
             onClick={generateAvatar}
             disabled={loading}
@@ -198,10 +219,10 @@ export default function AvatarGenerator() {
           </button>
         </div>
 
-        {/* RIGHT SIDE - Preview */}
+       
         <div className="lg:sticky lg:top-24 lg:self-start">
           <div className="bg-[#0D1117]/80 backdrop-blur-sm border border-white/5 rounded-2xl p-8 min-h-[700px] flex flex-col items-center justify-center relative overflow-hidden">
-            {/* Background Pattern */}
+            
             <div className="absolute inset-0 opacity-30">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px]"></div>
@@ -226,7 +247,10 @@ export default function AvatarGenerator() {
                   </button>
                   
                   <button 
-                    onClick={() => setSvg(null)}
+                    onClick={() => {
+                      setSvg(null);
+                      setError(null);
+                    }}
                     className="px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-all border border-white/10"
                   >
                     Nouveau

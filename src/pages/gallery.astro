@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
+import LikeButton from '../components/feature/LikeButton';
 
 export const prerender = false;
 
@@ -30,8 +31,8 @@ try {
   <main class="max-w-7xl mx-auto px-6 pt-12 min-h-screen">
     <div class="flex justify-between items-end mb-10 pt-10">
       <div>
-        <h2 class="text-3xl md:text-4xl font-bold text-white">Galerie Communautaire</h2>
-        <p class="text-slate-400 mt-2">Explorez les personnages créés par la communauté.</p>
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Galerie Communautaire</h2>
+        <p class="text-slate-600 dark:text-slate-400 mt-2">Explorez les personnages créés par la communauté.</p>
       </div>
       <a href="/" class="hidden md:inline-flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
         <span>+ Créer un Nouveau</span>
@@ -60,23 +61,22 @@ try {
     ) : (
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {avatars.map((av) => (
-          <div class="group bg-[#131825] rounded-2xl p-4 border border-white/5 hover:border-indigo-500/30 hover:bg-[#1A1F2E] transition-all duration-300 hover:-translate-y-1 shadow-2xl shadow-black/20">
-            <div class="aspect-square w-full overflow-hidden rounded-xl bg-[#0B0F19] relative items-center justify-center flex p-4 border border-white/5">
+          <div class="group bg-white dark:bg-[#131825] rounded-2xl p-4 border border-slate-200 dark:border-white/5 hover:border-indigo-500/30 hover:bg-slate-50 dark:hover:bg-[#1A1F2E] transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl dark:shadow-black/20">
+            <div class="aspect-square w-full overflow-hidden rounded-xl bg-slate-50 dark:bg-[#0B0F19] relative items-center justify-center flex p-4 border border-slate-100 dark:border-white/5">
                <div set:html={av.svg_content} class="w-full h-full drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-500" />
             </div>
             <div class="mt-4 px-1">
               <div class="flex justify-between items-start mb-2 h-10">
-                 <p class="text-sm font-semibold text-slate-200 line-clamp-2 leading-snug" title={av.prompt}>
+                 <p class="text-sm font-semibold text-slate-900 dark:text-slate-200 line-clamp-2 leading-snug" title={av.prompt}>
                    {av.style_tags?.features || 'Avatar'}
                  </p>
               </div>
-              <div class="flex justify-between items-center pt-2 border-t border-white/5">
-                <span class="inline-flex items-center px-2 py-1 rounded-md bg-white/5 text-indigo-300 text-[10px] font-bold uppercase tracking-wider border border-white/5">
+              <div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-white/5">
+                <span class="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 dark:bg-white/5 text-indigo-600 dark:text-indigo-300 text-[10px] font-bold uppercase tracking-wider border border-slate-200 dark:border-white/5">
                   {av.color_palette || 'SVG'}
                 </span>
-                <span class="text-xs text-slate-500 font-medium">
-                  {new Date(av.created_at).toLocaleDateString()}
-                </span>
+                
+                <LikeButton client:load avatarId={av.id} initialLikes={av.likes_count || 0} />
               </div>
             </div>
           </div>

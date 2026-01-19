@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check build
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Build failed - dist directory not found"
+            exit 1
+          fi
+          echo "Build successful"
+
+  lint-commits:
+    name: Lint Commits
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify commit messages
+        run: |
+          commits=$(git log --format=%s origin/${{ github.base_ref }}..${{ github.sha }})
+          echo "Checking commit messages:"
+          echo "$commits"
+
+          invalid=0
+          while IFS= read -r commit; do
+            if ! echo "$commit" | grep -qE '^(feat:|fix:|test:|docs:|style:|refactor:|perf:|chore:)'; then
+              echo "Invalid commit message: $commit"
+              echo "Commit messages must start with: feat:, fix:, test:, docs:, style:, refactor:, perf:, or chore:"
+              invalid=1
+            fi
+          done <<< "$commits"
+
+          if [ $invalid -eq 1 ]; then
+            exit 1
+          fi
+
+          echo "All commit messages are valid"
